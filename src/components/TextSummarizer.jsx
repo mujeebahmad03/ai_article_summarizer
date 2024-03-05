@@ -122,7 +122,7 @@ const TextSummarizer = () => {
       </div>
 
       {allSummaries.length ? (
-        <Button className="mt-4" fullWidth onClick={() => setIsOpen(true)}>
+        <Button className="mt-4 mb-4" fullWidth onClick={() => setIsOpen(true)}>
           Clear History
         </Button>
       ) : (
