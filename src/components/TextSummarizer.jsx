@@ -93,14 +93,14 @@ const TextSummarizer = () => {
               variant="text"
               className="rounded-md"
               onClick={() => setTextObj((prev) => ({ ...prev, text: "" }))}
-              disabled={isLoading ? true : false}
+              disabled={isLoading ? true : false || textObj.text ? false : true}
             >
               Clear
             </Button>
             <Button
               size="sm"
               className="rounded-md"
-              disabled={isLoading ? true : false}
+              disabled={isLoading ? true : false || textObj.text ? false : true}
               onClick={handleSubmit}
             >
               Summarize
