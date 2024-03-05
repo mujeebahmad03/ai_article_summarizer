@@ -72,7 +72,7 @@ const TextSummarizer = () => {
 
   return (
     <section className="mt-16 w-full max-w-xl">
-      <div className="relative w-[36rem]">
+      <div className="relative">
         <Textarea
           label="Enter your text here"
           rows={8}
@@ -80,7 +80,7 @@ const TextSummarizer = () => {
           value={textObj.text}
           onChange={(e) => setTextObj({ ...textObj, text: e.target.value })}
         />
-        <div className="flex w-full justify-between py-1.5">
+        <div className="flex w-full justify-between py-1.5 flex-wrap gap-4">
           <SupportedLanguages
             onChange={(value) => setTextObj({ ...textObj, lang: value })}
             value={textObj.lang}
