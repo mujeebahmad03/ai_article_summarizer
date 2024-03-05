@@ -87,10 +87,22 @@ const TextSummarizer = () => {
             name="lang"
           />
           <div className="flex gap-2">
-            <Button size="sm" color="red" variant="text" className="rounded-md">
+            <Button
+              size="sm"
+              color="red"
+              variant="text"
+              className="rounded-md"
+              onClick={() => setTextObj((prev) => ({ ...prev, text: "" }))}
+              disabled={isLoading ? true : false}
+            >
               Clear
             </Button>
-            <Button size="sm" className="rounded-md"  disabled={isLoading ? true : false} onClick={handleSubmit}>
+            <Button
+              size="sm"
+              className="rounded-md"
+              disabled={isLoading ? true : false}
+              onClick={handleSubmit}
+            >
               Summarize
             </Button>
           </div>
@@ -108,7 +120,7 @@ const TextSummarizer = () => {
         )
       )}
 
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-4 mb-4">
         <Button color="blue" onClick={handlePrev} disabled={currentIndex <= 0}>
           Prev
         </Button>
