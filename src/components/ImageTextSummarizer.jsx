@@ -148,7 +148,7 @@ const ImageTextSummarizer = () => {
           <ExtractedText text={textObj.text} />
           <Button
             size="sm"
-            className="rounded-md"
+            className="rounded-md mb-4"
             disabled={isLoading ? true : false}
             onClick={handleSubmit}
           >
