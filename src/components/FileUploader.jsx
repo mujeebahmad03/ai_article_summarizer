@@ -8,6 +8,8 @@ const FileUploader = ({
   dragging,
   loading,
   handleFileUpload,
+  title,
+  fileTypes
 }) => {
   return (
     <>
@@ -23,9 +25,9 @@ const FileUploader = ({
         <div className="flex justify-center w-full mx-auto sm:max-w-lg">
           <div className="flex flex-col items-center justify-center w-full h-auto my-20 bg-white sm:w-3/4 sm:rounded-lg sm:shadow-xl">
             <div className="mt-10 mb-10 text-center">
-              <h2 className="text-2xl font-semibold mb-2">Upload your image</h2>
+              <h2 className="text-2xl font-semibold mb-2">{title}</h2>
               <p className="text-xs text-gray-500">
-                Image should be of format .jpg, .png, .webp, .pbm, .bmp
+                File should be of format {fileTypes}
               </p>
             </div>
             <div
@@ -71,6 +73,8 @@ FileUploader.propTypes = {
   dragging: PropTypes.bool,
   loading: PropTypes.bool,
   handleFileUpload: PropTypes.func,
+  title: PropTypes.string,
+  fileTypes: PropTypes.string
 };
 
 export default FileUploader;
