@@ -1,35 +1,36 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FileUploader from "./FileUploader";
 import { useSummarizeTextMutation } from "../services/article";
 import { createWorker } from "tesseract.js";
 import ExtractedText from "./ExtractedText";
 import { Button } from "@material-tailwind/react";
-import Loader from "./Loader";
-import Error from "./Error";
-import Summary from "./Summary";
-import Popup from "./Popup";
+import useSummarizer from "../hooks/useSummarizer";
+import SummaryContainer from "./SummaryContainer";
+import useHandleDrag from "../hooks/useHandleDrag";
+import ClearHistory from "./ClearHistory";
+import PrevNextButtons from "./PrevNextButtons";
 
 const ImageTextSummarizer = () => {
-  const [textObj, setTextObj] = useState({ text: "", lang: "en" });
   const [loading, setLoading] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const [summary, setSummary] = useState("");
-  const [allSummaries, setAllSummaries] = useState([]);
-  const [copied, setCopied] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
 
   const [summarizeText, { error, isLoading }] = useSummarizeTextMutation();
 
-  useEffect(() => {
-    const summariesFromLocalStorage = JSON.parse(
-      localStorage.getItem("imageTextSummary")
-    );
-
-    if (summariesFromLocalStorage) {
-      setAllSummaries(summariesFromLocalStorage);
-      setSummary(summariesFromLocalStorage[0]);
-    }
-  }, []);
+  const {
+    summary,
+    allSummaries,
+    copied,
+    currentIndex,
+    isOpen,
+    dataObj,
+    handleSubmit,
+    handleCopy,
+    handleNext,
+    handlePrev,
+    onConfirm,
+    setDataObj,
+    setIsOpen,
+    setSummary,
+  } = useSummarizer({ text: "", lang: "en" }, "textSummary", summarizeText);
 
   const handleFileUpload = async (file) => {
     setLoading(true);
@@ -65,8 +66,8 @@ const ImageTextSummarizer = () => {
       const {
         data: { text },
       } = await worker.recognize(file);
-      setTextObj((prev) => ({ ...prev, text: text }));
-      setSummary("")
+      setDataObj((prev) => ({ ...prev, text: text }));
+      setSummary("");
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -76,63 +77,16 @@ const ImageTextSummarizer = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const { data } = await summarizeText(textObj);
-
-    if (data?.summary) {
-      const newSummary = data.summary;
-
-      const updatedSummaries = [...allSummaries, newSummary];
-
-      setSummary(newSummary);
-      setAllSummaries(updatedSummaries);
-      localStorage.setItem(
-        "imageTextSummary",
-        JSON.stringify(updatedSummaries)
-      );
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
-
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
-
-  const handleCopy = (str) => {
-    setCopied(str);
-    navigator.clipboard.writeText(str);
-    setTimeout(() => setCopied(false), 3000);
-  };
-
-  const onConfirm = () => {
-    localStorage.removeItem("imageTextSummary");
-    setAllSummaries([]);
-    setTextObj({ text: "", lang: "en" });
-  };
+  const {
+    dragging,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
+  } = useHandleDrag(handleFileUpload);
 
   return (
-    <>
+    <section className="mt-16 w-full max-w-xl">
       <FileUploader
         handleDragEnter={handleDragEnter}
         handleDragOver={handleDragOver}
@@ -143,9 +97,9 @@ const ImageTextSummarizer = () => {
         handleFileUpload={handleFileUpload}
       />
 
-      {textObj.text && (
+      {dataObj.text && (
         <>
-          <ExtractedText text={textObj.text} />
+          <ExtractedText text={dataObj.text} />
           <Button
             size="sm"
             className="rounded-md mb-4"
@@ -154,33 +108,35 @@ const ImageTextSummarizer = () => {
           >
             Summarize
           </Button>
-
-          {/* Display Results */}
-          {isLoading ? (
-            <Loader />
-          ) : error ? (
-            <Error error={error} />
-          ) : (
-            summary && (
-              <Summary
-                summary={summary}
-                copied={copied}
-                handleCopy={handleCopy}
-              />
-            )
-          )}
-
-          {allSummaries.length ? (
-            <Button className="mt-4 mb-4" fullWidth onClick={() => setIsOpen(true)}>
-              Clear History
-            </Button>
-          ) : (
-            ""
-          )}
-          <Popup isOpen={isOpen} setIsOpen={setIsOpen} onConfirm={onConfirm} />
         </>
       )}
-    </>
+
+      {/* Display Results */}
+      {summary && (
+        <SummaryContainer
+          summary={summary}
+          isLoading={isLoading}
+          error={error}
+          copied={copied}
+          handleCopy={handleCopy}
+        />
+      )}
+
+      <PrevNextButtons
+        allSummaries={allSummaries}
+        currentIndex={currentIndex}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
+      />
+
+      {allSummaries.length && (
+        <ClearHistory
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          onConfirm={onConfirm}
+        />
+      )}
+    </section>
   );
 };
 

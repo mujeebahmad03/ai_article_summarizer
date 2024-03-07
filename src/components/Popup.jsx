@@ -1,9 +1,6 @@
-// import { useState } from "react";
 import PropTypes from "prop-types";
 
 const Popup = ({ title, message, onConfirm, isOpen, setIsOpen }) => {
-  // const [isOpen, setIsOpen] = useState(false);
-
   const handleConfirm = () => {
     setIsOpen(false);
     onConfirm();
