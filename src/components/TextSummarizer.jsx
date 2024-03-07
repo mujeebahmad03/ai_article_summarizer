@@ -80,7 +80,7 @@ const TextSummarizer = () => {
         handlePrev={handlePrev}
       />
 
-      {allSummaries.length && (
+      {allSummaries.length > 0 && (
         <ClearHistory
           isOpen={isOpen}
           setIsOpen={setIsOpen}

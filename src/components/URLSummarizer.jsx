@@ -71,7 +71,7 @@ const URLSummarizer = () => {
         </div>
       </div>
 
-      {allSummaries.length && (
+      {allSummaries.length > 0 && (
         <ClearHistory
           isOpen={isOpen}
           setIsOpen={setIsOpen}
