@@ -7,7 +7,7 @@ const useHandleCopy = (timeoutDuration = 3000) => {
     try {
       await navigator.clipboard.writeText(str);
       setCopied(str);
-      setTimeout(() => setCopied(false), timeoutDuration);
+      setTimeout(() => setCopied(""), timeoutDuration);
     } catch (error) {
       console.error("Failed to copy text: ", error);
     }

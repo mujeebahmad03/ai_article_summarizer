@@ -2,53 +2,50 @@ import { useEffect, useState } from "react";
 import useHandleCopy from "./useHandleCopy";
 
 const useSummarizer = (initialState, localStorageKey, summarizeFunction) => {
-  const { copied, handleCopy } = useHandleCopy();
-
   const [dataObj, setDataObj] = useState(initialState);
   const [summary, setSummary] = useState("");
-
-  const [allSummaries, setAllSummaries] = useState([]);
+  const [allSummaries, setAllSummaries] = useState(
+    JSON.parse(localStorage.getItem(localStorageKey)) || []
+  );
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
+  const { copied, handleCopy } = useHandleCopy();
 
   useEffect(() => {
-    const summariesFromLocalStorage = JSON.parse(
-      localStorage.getItem(localStorageKey)
-    );
-
-    if (summariesFromLocalStorage) {
-      setSummary(summariesFromLocalStorage[0]);
-      setAllSummaries(summariesFromLocalStorage);
+    if (allSummaries.length) {
+      setSummary(allSummaries[0]);
+      setCurrentIndex(0);
     }
-  }, [localStorageKey]);
+  }, [allSummaries]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await summarizeFunction(dataObj);
 
     if (data?.summary) {
-      const newSummary = data.summary;
-
-      const updatedSummaries = [...allSummaries, newSummary];
-
-      setSummary(newSummary);
-      setAllSummaries(updatedSummaries);
-      localStorage.setItem(localStorageKey, JSON.stringify(updatedSummaries));
+      setSummary(data.summary);
+      setAllSummaries((prevSummaries) => [...prevSummaries, data.summary]);
+      localStorage.setItem(
+        localStorageKey,
+        JSON.stringify([...allSummaries, data.summary])
+      );
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < allSummaries.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setSummary(allSummaries[currentIndex + 1]);
-    }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % allSummaries.length);
+    setSummary(allSummaries[(currentIndex + 1) % allSummaries.length]);
   };
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setSummary(allSummaries[currentIndex - 1]);
-    }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + allSummaries.length) % allSummaries.length
+    );
+    setSummary(
+      allSummaries[
+        (currentIndex - 1 + allSummaries.length) % allSummaries.length
+      ]
+    );
   };
 
   const onConfirm = () => {

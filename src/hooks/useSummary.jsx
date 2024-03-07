@@ -5,22 +5,21 @@ import useHandleCopy from "./useHandleCopy";
 const useSummary = () => {
   const { copied, handleCopy } = useHandleCopy();
 
-  const [article, setArticle] = useState({ url: "", summary: "" });
+  const [article, setArticle] = useState(
+    JSON.parse(localStorage.getItem("article")) || { url: "", summary: "" }
+  );
   const [isOpen, setIsOpen] = useState(false);
 
-  const [allSummaries, setAllSummaries] = useState([]);
+  const [allSummaries, setAllSummaries] = useState(
+    JSON.parse(localStorage.getItem("urlSummary")) || []
+  );
 
   const [getSummary, { error, isFetching }] = useLazyGetURLSummaryQuery();
 
   useEffect(() => {
-    const articlesFromLocalStorage = JSON.parse(
-      localStorage.getItem("urlSummary")
-    );
-
-    if (articlesFromLocalStorage) {
-      setAllSummaries(articlesFromLocalStorage);
-    }
-  }, []);
+    localStorage.setItem("article", JSON.stringify(article));
+    localStorage.setItem("urlSummary", JSON.stringify(allSummaries));
+  }, [article, allSummaries]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,17 +29,14 @@ const useSummary = () => {
     if (data?.summary) {
       const newSummary = { ...article, summary: data.summary };
 
-      const updatedAllSummaries = [...allSummaries, newSummary];
-
       setArticle(newSummary);
-      setAllSummaries(updatedAllSummaries);
-
-      localStorage.setItem("urlSummary", JSON.stringify(updatedAllSummaries));
+      setAllSummaries([...allSummaries, newSummary]);
     }
   };
 
   const onConfirm = () => {
     localStorage.removeItem("urlSummary");
+    localStorage.removeItem("article");
     setAllSummaries([]);
     setArticle({ url: "", summary: "" });
   };
