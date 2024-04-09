@@ -1,0 +1,24 @@
+{
+  "routes":[
+    {
+      "src": "/",
+      "dest": "/"
+    },
+    {
+      "src": "/summarizer/url",
+      "dest": "/"
+    },
+    {
+      "src": "/summarizer/text",
+      "dest": "/"
+    },
+    {
+      "src": "/summarizer/image",
+      "dest": "/"
+    },
+    {
+      "src": "/summarizer/file",
+      "dest": "/"
+    }
+  ]
+}
