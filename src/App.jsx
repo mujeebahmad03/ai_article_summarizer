@@ -1,7 +1,15 @@
-import "./App.css";
-import Hero from "./components/Hero";
-import Summarizer from "./components/Summarizer";
+import { Route, Routes } from "react-router-dom";
 
+import {
+  FileTextSummarizer,
+  Hero,
+  ImageTextSummarizer,
+  Summarizer,
+  TextSummarizer,
+  URLSummarizer,
+} from "./components";
+
+import "./App.css";
 const App = () => {
   return (
     <main>
@@ -10,7 +18,14 @@ const App = () => {
       </div>
       <div className="app">
         <Hero />
-        <Summarizer />
+        <Routes>
+          <Route path="/" element={<Summarizer />}>
+            <Route path="/summarizer/url" element={<URLSummarizer />} />
+            <Route path="/summarizer/text" element={<TextSummarizer />} />
+            <Route path="/summarizer/image" element={<ImageTextSummarizer />} />
+            <Route path="/summarizer/file" element={<FileTextSummarizer />} />
+          </Route>
+        </Routes>
       </div>
     </main>
   );
